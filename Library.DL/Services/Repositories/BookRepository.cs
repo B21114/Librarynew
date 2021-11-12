@@ -44,25 +44,18 @@ namespace Library.DL.Services.Repositories
 
         public async Task<IEnumerable<Book>> Get(int page, int pageSize, string filter, string sortPole)
         {
-            var method = Book.GetSortExpressions(sortPole);
-            if (filter == string.Empty || filter == null)
-                return await _dataBaseContext.Books
-               .Include(p => p.Authors).Include(p => p.Publisher)
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .OrderBy(method)
-               .ToListAsync();
-            else
-                return await _dataBaseContext.Books
-               .Include(p => p.Authors).Include(p => p.Publisher)
-               .Where(t => t.Name.ToLower().Contains(filter) || t.Publisher.City.Contains(filter)
-               || t.Publisher.Name.Contains(filter) || t.Authors.Any(y => y.Lastname.Contains(filter))
-               || t.Authors.Any(y => y.Firstname.Contains(filter)) || t.Authors.Any(y => y.Patronymic.Contains(filter))
-               || t.Authors.Any(y => y.Activity.Contains(filter)))
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .OrderBy(method)
-               .ToListAsync();
+            var sortmethod = Book.GetSortExpressions(sortPole);
+            var query = _dataBaseContext.Books.Include(p => p.Authors).Include(p => p.Publisher).AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(t => t.Name.Contains(filter)
+                || t.Publisher.City.Contains(filter)
+                || t.Authors.Any(a => a.Lastname.Contains(filter))
+                || t.Authors.Any(a => a.Firstname.Contains(filter))
+                || t.Authors.Any(a => a.Patronymic.Contains(filter)));
+            }
+            return query.OrderBy(sortmethod).Skip((page - 1) * pageSize).Take(pageSize).ToList();    
         }
 
         public async Task<Book> Get(Guid id)
@@ -73,7 +66,7 @@ namespace Library.DL.Services.Repositories
 
         public async Task<Book> Update(Guid id, Book book)
         {
-            await _dataBaseContext.Books.FirstOrDefaultAsync(u => u.Id == id);
+            await _dataBaseContext.Books.FindAsync(id);
             _dataBaseContext.Entry(book).State = EntityState.Modified;
             await _dataBaseContext.SaveChangesAsync();
             return book;

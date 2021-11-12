@@ -29,43 +29,48 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<Guid> Add([FromBody] BookDTO book)
+        public async Task<IActionResult> Add([FromBody] BookDTO book)
         {
             var model = _mapper.Map<Book>(book);
             var newBook = await _bookProvider.Add(model);
-            return newBook.Id;
+            return Ok(newBook.Id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<Book>> Get()
+        public async Task<IActionResult> Get()
         {
-            return await _bookProvider.Get();
+
+            var books = await _bookProvider.Get();
+            return Ok(books);
         }
 
-        [HttpGet("GetAllPagination")]
-        public async Task<IEnumerable<Book>> Get(int page, int pagesize, string filter, string sortPole)
+        [HttpGet("GetAllFilterSortPagination")]
+        public async Task<IActionResult> Get(int page, int pagesize, string filter, string sortPole)
         {
-            return await _bookProvider.Get(page, pagesize, filter, sortPole);
+            var books = await _bookProvider.Get(page, pagesize, filter, sortPole);
+            return Ok(books);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<Guid> Update(Guid id, [FromBody] BookDTO book)
+        public async Task<IActionResult> Update(Guid id, [FromBody] BookDTO book)
         {
             var model = _mapper.Map<Book>(book);
             var updateBook = await _bookProvider.Add(model);
-            return updateBook.Id;
+            return Ok(updateBook.Id);
         }
 
         [HttpDelete("Delete")]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _bookProvider.Delete(id);
+            var delete = await _bookProvider.Delete(id);
+            return Ok(delete);
         }
 
         [HttpGet("Get")]
-        public async Task<Book> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _bookProvider.Get(id);
+            var book = await _bookProvider.Get(id);
+            return Ok(book);
         }
     }
 }

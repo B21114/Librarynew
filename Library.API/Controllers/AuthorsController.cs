@@ -28,43 +28,47 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<Guid> Add([FromBody] AuthorDTO author)
+        public async Task<IActionResult> Add([FromBody] AuthorDTO author)
         {
             var model = _mapper.Map<Author>(author);
             var newAuthor = await _authorProvider.Add(model);
-            return newAuthor.Id;
+            return Ok(newAuthor.Id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<Author>> Get()
+        public async Task<IActionResult> Get()
         {
-            return await _authorProvider.Get();
+            var authors = await _authorProvider.Get();
+            return Ok(authors);
         }
 
-        [HttpGet("GetAllPagination")]
-        public async Task<IEnumerable<Author>> Get(int page, int pagesize, string filter, string sortPole)
+        [HttpGet("GetAllFilterSortPagination")]
+        public async Task<IActionResult> Get(int page, int pagesize, string filter, string sortPole)
         {
-            return await _authorProvider.Get(page, pagesize, filter, sortPole);
+            var authors = await _authorProvider.Get(page, pagesize, filter, sortPole);
+            return Ok(authors);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<Guid> Update(Guid id, [FromBody] AuthorDTO author)
+        public async Task<IActionResult> Update(Guid id, [FromBody] AuthorDTO author)
         {
             var model = _mapper.Map<Author>(author);
             var updateAuthor = await _authorProvider.Update(id, model);
-            return updateAuthor.Id;
+            return Ok(updateAuthor.Id);
         }
 
         [HttpDelete("Delete")]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _authorProvider.Delete(id);
+            var authorDelete = await _authorProvider.Delete(id);
+            return Ok(authorDelete);
         }
 
         [HttpGet("Get")]
-        public async Task<Author> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _authorProvider.Get(id);
+            var author = await _authorProvider.Get(id);
+            return Ok(author);
         }
     }
 }

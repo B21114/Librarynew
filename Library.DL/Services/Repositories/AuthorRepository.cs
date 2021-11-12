@@ -27,9 +27,9 @@ namespace Library.DL.Services.Repositories
 
         public async Task<bool> Delete(Author author)
         {
-                _dataBaseContext.Entry(author).State = EntityState.Deleted;
-                await _dataBaseContext.SaveChangesAsync();
-                return true;
+            _dataBaseContext.Entry(author).State = EntityState.Deleted;
+            await _dataBaseContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<IEnumerable<Author>> Get()
@@ -39,30 +39,24 @@ namespace Library.DL.Services.Repositories
 
         public async Task<IEnumerable<Author>> Get(int page, int pageSize, string filter, string sortPole)
         {
-            var method = Author.GetSortExpressions(sortPole);
-            if (filter == string.Empty || filter == null)
-                return await _dataBaseContext.Authors
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .OrderBy(method)
-               .ToListAsync();
-            else
-                return await _dataBaseContext.Authors
-                   .Where(t => t.Firstname.ToLower().Contains(filter) || t.Firstname.Contains(filter))
-                   .Skip((page - 1) * pageSize)
-                   .Take(pageSize)
-                   .OrderBy(method)
-                   .ToListAsync();
+            var sortmethod = Author.GetSortExpressions(sortPole);
+            var query = _dataBaseContext.Authors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(t => t.Firstname.ToLower().Contains(filter) || t.Firstname.Contains(filter));
+            }
+            return query.OrderBy(sortmethod).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public async Task<Author> Get(Guid id)
         {
-            return await _dataBaseContext.Authors.FirstOrDefaultAsync(u => u.Id == id);
+            return await _dataBaseContext.Authors.FindAsync(id);
         }
 
         public async Task<Author> Update(Guid id, Author author)
         {
-            await _dataBaseContext.Authors.FirstOrDefaultAsync(u => u.Id == id);
+            await _dataBaseContext.Authors.FindAsync(id);
             _dataBaseContext.Entry(author).State = EntityState.Modified;
             await _dataBaseContext.SaveChangesAsync();
             return author;

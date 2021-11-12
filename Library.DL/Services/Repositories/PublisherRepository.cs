@@ -38,30 +38,27 @@ namespace Library.DL.Services.Repositories
         }
 
         public async Task<IEnumerable<Publisher>> Get(int page, int pageSize, string filter, string sortPole)
+
         {
-            var method = Publisher.GetSortExpressions(sortPole);
-            if (filter == string.Empty || filter == null)
-                return await _dataBaseContext.Publishers
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .OrderBy(method)
-               .ToListAsync();
-            else
-                return await _dataBaseContext.Publishers
-                   .Where(t => t.Name.ToLower().Contains(filter) || t.City.ToLower().Contains(filter))
-                   .Skip((page - 1) * pageSize)
-                   .Take(pageSize)
-                   .OrderBy(method)
-                   .ToListAsync();
+            var sortmethod = Publisher.GetSortExpressions(sortPole);
+            var query = _dataBaseContext.Publishers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(t => t.Name.ToLower().Contains(filter) || t.City.ToLower().Contains(filter));
+            }
+            return query.OrderBy(sortmethod).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
+
+
         public async Task<Publisher> Get(Guid id)
         {
-            return await _dataBaseContext.Publishers.FirstOrDefaultAsync(u => u.Id == id);
+            return await _dataBaseContext.Publishers.FindAsync(id);
         }
 
         public async Task<Publisher> Update(Guid id, Publisher publisher)
         {
-            await _dataBaseContext.Publishers.FirstOrDefaultAsync(u => u.Id == id);
+            await _dataBaseContext.Publishers.FindAsync(id);
             _dataBaseContext.Entry(publisher).State = EntityState.Modified;
             await _dataBaseContext.SaveChangesAsync();
             return publisher;
