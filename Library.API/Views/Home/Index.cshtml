@@ -1,0 +1,44 @@
+﻿<script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+<html>
+<head>
+    Ajax запрос
+</head>
+<body>
+    <div id="receipts">
+        <table>
+            <tr>
+                <th>#</th>
+                <th>Наименование книги</th>
+                <th>Авторы</th>
+                <th>Издатель</th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            method: 'GET',
+            url: 'https://localhost:5001/api/Books/GetAllFilterSortPagination',
+            contentType: 'application/json',
+            success: function (receipts) {
+                $(receipts).each(function (index, item) {
+                    console.log(item);
+                    $('#receipts tbody').append(
+                        '<tr>'
+                        + '<td>' + (index + 1) + '</td>'
+                        + '<td>' + item.name + '</td>'
+                        + '<td>' + item.authors[0].lastname + '</td>'
+                        + '<td>' + item.publisher.name + '</td>' +
+                        '</tr>');
+                })
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    })
+</script>

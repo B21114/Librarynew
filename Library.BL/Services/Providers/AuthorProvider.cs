@@ -32,7 +32,7 @@ namespace Library.BL.Services.Providers
                 await _authorRepository.Delete(author);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

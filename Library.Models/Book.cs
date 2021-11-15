@@ -12,17 +12,6 @@ namespace Library.Models
     /// </summary>
     public class Book
     {
-        public static Expression<Func<Book, object>> GetSortExpressions(string sortBy)
-        {
-            return sortBy?.ToLower() switch
-            {
-                "name" => p => p.Name,
-                "numberofpages" => p => p.NumberOfPages,
-                "authors" => p => p.Authors,
-                "publisher" => p => p.Publisher,
-                _ => p => p.Id
-            };
-        }
 
         /// <summary>
         /// Идентификатор книги.
@@ -48,5 +37,22 @@ namespace Library.Models
         /// Издатель книги.
         /// </summary>
         public Publisher Publisher { get; set; }
+
+        /// <summary>
+        /// Метод для сортировки по полям.
+        /// </summary>
+        /// <param name="sortBy"></param>
+        /// <returns></returns>
+        public static Expression<Func<Book, object>> GetSortExpressions(string sortBy)
+        {
+            return sortBy?.ToLower() switch
+            {
+                "name" => p => p.Name,
+                "numberofpages" => p => p.NumberOfPages,
+                "authors" => p => p.Authors,
+                "publisher" => p => p.Publisher,
+                _ => p => p.Id
+            };
+        }
     }
 }

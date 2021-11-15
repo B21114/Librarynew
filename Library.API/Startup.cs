@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Library.API.Config;
 using Library.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Library.API
 {
@@ -45,6 +46,15 @@ namespace Library.API
             services.AddScoped<IBookProvider, BookProvider>();
             services.AddScoped<IPublisherRepository, PublisherRepository>();
             services.AddScoped<IPublisherProvider, PublisherProvider>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserProvider, UserProvider>();
+
+            // установка конфигурации подключения
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+                });
 
             services.AddDbContext<DataBaseContext>(options =>
             {
@@ -53,6 +63,7 @@ namespace Library.API
                 options.EnableSensitiveDataLogging();
             });
             services.AddControllers();
+            services.AddControllersWithViews();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Library.API", Version = "v1" });
@@ -73,11 +84,15 @@ namespace Library.API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();    // аутентификация
+            app.UseAuthorization();     // авторизация
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -31,7 +31,7 @@ namespace Library.BL.Services.Providers
                 await _publisherRepository.Delete(publisher);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

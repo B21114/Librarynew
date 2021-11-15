@@ -25,12 +25,14 @@ namespace Library.DL.Services
         /// </summary>
         public DbSet<Publisher> Publishers { get; set; }
 
+        /// <summary>
+        /// Содержимое таблицы пользователь.
+        /// </summary>
+        public DbSet<User> Users { get; set; }
+
         public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
         {
             Database.EnsureCreated();
-        }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
         }
     }
 }

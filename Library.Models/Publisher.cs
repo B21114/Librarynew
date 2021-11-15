@@ -8,20 +8,10 @@ using System.Threading.Tasks;
 namespace Library.Models
 {
     /// <summary>
-    /// Класс издателя.
+    /// Модель издателя.
     /// </summary>
     public class Publisher
     {
-        public static Expression<Func<Publisher, object>> GetSortExpressions(string sortBy)
-        {
-            return sortBy?.ToLower() switch
-            {
-                "name" => p => p.Name,
-                "city" => p => p.City,
-                _ => p => p.Id
-            };
-        }
-
         /// <summary>
         /// Идентификатор издателя.
         /// </summary>
@@ -36,5 +26,20 @@ namespace Library.Models
         /// Город издателя.
         /// </summary>
         public string City { get; set; }
+
+        /// <summary>
+        /// Метод для сортировки по полям.
+        /// </summary>
+        /// <param name="sortBy"></param>
+        /// <returns></returns>
+        public static Expression<Func<Publisher, object>> GetSortExpressions(string sortBy)
+        {
+            return sortBy?.ToLower() switch
+            {
+                "name" => p => p.Name,
+                "city" => p => p.City,
+                _ => p => p.Id
+            };
+        }
     }
 }

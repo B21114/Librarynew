@@ -14,18 +14,6 @@ namespace Library.Models
     /// </summary>
     public class Author
     {
-        public static Expression<Func<Author, object>> GetSortExpressions(string sortBy)
-        {
-            return sortBy?.ToLower() switch
-            {
-                "firstname" => p => p.Firstname,
-                "lastname" => p => p.Lastname,
-                "patronomic" => p => p.Patronymic,
-                "activity" => p => p.Activity,
-                _ => p => p.Id
-            };
-        }
-
         /// <summary>
         /// Идентификатор автора.
         /// </summary>
@@ -50,5 +38,23 @@ namespace Library.Models
         /// Деятельность автора.
         /// </summary>
         public string Activity { get; set; }
+
+        /// <summary>
+        /// Метод для сортировки по полям.
+        /// </summary>
+        /// <param name="sortBy"></param>
+        /// <returns></returns>
+
+        public static Expression<Func<Author, object>> GetSortExpressions(string sortBy)
+        {
+            return sortBy?.ToLower() switch
+            {
+                "firstname" => p => p.Firstname,
+                "lastname" => p => p.Lastname,
+                "patronomic" => p => p.Patronymic,
+                "activity" => p => p.Activity,
+                _ => p => p.Id
+            };
+        }
     }
 }

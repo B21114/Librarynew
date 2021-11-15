@@ -45,9 +45,9 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("GetAllFilterSortPagination")]
-        public async Task<IActionResult> Get(int page, int pagesize, string filter, string sortPole)
+        public async Task<IActionResult> Get(string filter, string sortPole, int pageNumber = 1, int pageSize = 10)
         {
-            var books = await _bookProvider.Get(page, pagesize, filter, sortPole);
+            var books = await _bookProvider.Get(pageNumber, pageSize, filter, sortPole);
             return Ok(books);
         }
 
