@@ -5,22 +5,16 @@ using Library.DL.Services.Interfaces;
 using Library.DL.Services.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using Library.API.Config;
-using Library.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Library.BL.Config;
+using System.Text;
 
 namespace Library.API
 {
@@ -49,19 +43,17 @@ namespace Library.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserProvider, UserProvider>();
 
-            // установка конфигурации подключения
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => //CookieAuthenticationOptions
-                {
-                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
-                });
-
             services.AddDbContext<DataBaseContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
             });
+
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            var key = Encoding.ASCII.GetBytes(appSettingsSection.Get<AppSettings>().Secret);
+
             services.AddControllers();
             services.AddControllersWithViews();
             services.AddSwaggerGen(c =>

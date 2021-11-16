@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Library.DL.Services.Interfaces
 {
-    public interface IAuthorRepository
+    public interface IAuthorRepository : ITEntityRepository<Author>
     {
         Task<IEnumerable<Author>> Get();
         Task<IEnumerable<Author>> Get(int page, int pageSize, string filter, string sortPole);

@@ -9,33 +9,33 @@ using System.Threading.Tasks;
 
 namespace Library.DL.Services.Repositories
 {
-    public class PublisherRepository : IPublisherRepository
+    public class PublisherRepository : TEntityRepository<Publisher>, IPublisherRepository
     {
         private readonly DataBaseContext _dataBaseContext;
 
-        public PublisherRepository(DataBaseContext dataBaseContext)
+        public PublisherRepository(DataBaseContext dataBaseContext) : base(dataBaseContext)
         {
             _dataBaseContext = dataBaseContext;
         }
 
-        public async Task<Publisher> Add(Publisher publisher)
-        {
-            await _dataBaseContext.Publishers.AddAsync(publisher);
-            await _dataBaseContext.SaveChangesAsync();
-            return publisher;
-        }
+        //public async Task<Publisher> Add(Publisher publisher)
+        //{
+        //    await _dataBaseContext.Publishers.AddAsync(publisher);
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return publisher;
+        //}
 
-        public async Task<bool> Delete(Publisher publisher)
-        {
-            _dataBaseContext.Entry(publisher).State = EntityState.Deleted;
-            await _dataBaseContext.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<bool> Delete(Publisher publisher)
+        //{
+        //    _dataBaseContext.Entry(publisher).State = EntityState.Deleted;
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return true;
+        //}
 
-        public async Task<IEnumerable<Publisher>> Get()
-        {
-            return await _dataBaseContext.Publishers.ToListAsync();
-        }
+        //public async Task<IEnumerable<Publisher>> Get()
+        //{
+        //    return await _dataBaseContext.Publishers.ToListAsync();
+        //}
 
         public async Task<IEnumerable<Publisher>> Get(int page, int pageSize, string filter, string sortPole)
 

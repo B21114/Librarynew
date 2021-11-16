@@ -6,7 +6,6 @@ using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,48 +28,47 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add([FromBody] BookDTO book)
+        public async Task<ApiResult<Guid>> Add([FromBody] BookDTO book)
         {
             var model = _mapper.Map<Book>(book);
             var newBook = await _bookProvider.Add(model);
-            return Ok(newBook.Id);
+            return ApiResult.Success(newBook.Id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IActionResult> Get()
+        public async Task<ApiResult<IEnumerable<Book>>> Get()
         {
-
             var books = await _bookProvider.Get();
-            return Ok(books);
+            return ApiResult.Success(books);
         }
 
         [HttpGet("GetAllFilterSortPagination")]
-        public async Task<IActionResult> Get(string filter, string sortPole, int pageNumber = 1, int pageSize = 10)
+        public async Task<ApiResult<IEnumerable<Book>>> Get(string filter, string sortPole, int pageNumber = 1, int pageSize = 10)
         {
             var books = await _bookProvider.Get(pageNumber, pageSize, filter, sortPole);
-            return Ok(books);
+            return ApiResult.Success(books);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] BookDTO book)
+        public async Task<ApiResult<Guid>> Update(Guid id, [FromBody] BookDTO book)
         {
             var model = _mapper.Map<Book>(book);
             var updateBook = await _bookProvider.Add(model);
-            return Ok(updateBook.Id);
+            return ApiResult.Success(updateBook.Id);
         }
 
         [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ApiResult<bool>> Delete(Guid id)
         {
             var delete = await _bookProvider.Delete(id);
-            return Ok(delete);
+            return ApiResult.Success(delete);
         }
 
         [HttpGet("Get")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ApiResult<Book>> Get(Guid id)
         {
             var book = await _bookProvider.Get(id);
-            return Ok(book);
+            return ApiResult.Success(book);
         }
     }
 }

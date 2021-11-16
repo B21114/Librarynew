@@ -9,16 +9,22 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
+using Library.BL.Config;
+using System.Security.Cryptography;
+using System.ComponentModel;
 
 namespace Library.BL.Services.Providers
 {
     public class UserProvider : IUserProvider
     {
         private readonly IUserRepository _userRepository;
+        private readonly string _appSettings;
 
-        public UserProvider(IUserRepository userRepository)
+        public UserProvider(IUserRepository userRepository, IOptions<AppSettings> appSettings)
         {
             _userRepository = userRepository;
+            _appSettings =appSettings.Value.Secret;
         }
 
         public async Task<User> Add(User user)
@@ -63,42 +69,68 @@ namespace Library.BL.Services.Providers
         public async Task<User> Update(Guid id, User user)
         {
             var publisherDB = await _userRepository.Get(id);
-            if (publisherDB != null)
+               if (publisherDB != null)
             {
                 publisherDB.Name = user.Name;
                 publisherDB.Email = user.Email;
-                publisherDB.Password = user.Password;
-                publisherDB.ConfirmPassword = user.ConfirmPassword;
+                publisherDB.PasswordStr = user.PasswordStr;
+                publisherDB.ConfirmPasswordStr = user.ConfirmPasswordStr;
                 return await _userRepository.Update(id, publisherDB);
             }
             return await _userRepository.Add(new User());
         }
 
-        public async Task<UserAuth> Authenticate(string email, string password)
+        public async Task<User> Authenticate(string email, string password)
         {
             var user = await _userRepository.Get(email);
+            var identity = GetIdentity(email, password);
+            if (identity == null)
+            {
+                return null;
+            }
 
             if (user is null)
             {
                 return null;
             }
-
-            if (password != user.Password)
+            if (password != user.PasswordStr)
             {
                 return null;
             }
+            var now = DateTime.UtcNow;
+            // создаем JWT-токен
+            var jwt = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    notBefore: now,
+                    claims: identity.Result.Claims,
+                    expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            // создаем один claim
-            var claims = new List<Claim>
+            return new User
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, email)
+                Token = encodedJwt,
+                Name = identity.Result.Name
             };
+        }
 
-            return new UserAuth
+        private async Task<ClaimsIdentity> GetIdentity(string username, string password)
+        {
+            var user = await _userRepository.Get(username);
+            if (user != null)
             {
-                Email = email
-            };
-         
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email)
+                };
+                ClaimsIdentity claimsIdentity =
+                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType);
+                return claimsIdentity;
+            }
+            // если пользователя не найдено
+            return null;
         }
     }
 }

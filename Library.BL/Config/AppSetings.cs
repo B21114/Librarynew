@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Library.Models
+namespace Library.BL.Config
 {
-    public class AuthUser
+    public class AppSettings
     {
-
+        public string Secret { get; set; }
     }
 }

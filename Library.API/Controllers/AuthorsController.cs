@@ -6,7 +6,6 @@ using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,48 +26,57 @@ namespace Library.API.Controllers
             _mapper = mapper;
         }
 
+        //[HttpPost("Add")]
+        //public async Task<IActionResult> Add([FromBody] AuthorDTO author)
+        //{
+        //    var model = _mapper.Map<Author>(author);
+        //    var newAuthor = await _authorProvider.Add(model);
+        //    return Ok(newAuthor.Id);
+        //}
+
         [HttpPost("Add")]
-        public async Task<IActionResult> Add([FromBody] AuthorDTO author)
+        public async Task<ApiResult<Guid>> Add([FromBody] AuthorDTO author)
         {
             var model = _mapper.Map<Author>(author);
             var newAuthor = await _authorProvider.Add(model);
-            return Ok(newAuthor.Id);
+
+            return ApiResult.Success(newAuthor.Id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IActionResult> Get()
+        public async Task<ApiResult<IEnumerable<Author>>> Get()
         {
             var authors = await _authorProvider.Get();
-            return Ok(authors);
+            return ApiResult.Success(authors);
         }
 
         [HttpGet("GetAllFilterSortPagination")]
-        public async Task<IActionResult> Get(int page, int pagesize, string filter, string sortPole)
+        public async Task<ApiResult<IEnumerable<Author>>> Get(int page, int pagesize, string filter, string sortPole)
         {
             var authors = await _authorProvider.Get(page, pagesize, filter, sortPole);
-            return Ok(authors);
+            return ApiResult.Success(authors);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] AuthorDTO author)
+        public async Task<ApiResult<Guid>> Update(Guid id, [FromBody] AuthorDTO author)
         {
             var model = _mapper.Map<Author>(author);
             var updateAuthor = await _authorProvider.Update(id, model);
-            return Ok(updateAuthor.Id);
+            return ApiResult.Success(updateAuthor.Id);
         }
 
         [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ApiResult<bool>> Delete(Guid id)
         {
             var authorDelete = await _authorProvider.Delete(id);
-            return Ok(authorDelete);
+            return ApiResult.Success(authorDelete);
         }
 
         [HttpGet("Get")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ApiResult<Author>> Get(Guid id)
         {
             var author = await _authorProvider.Get(id);
-            return Ok(author);
+            return ApiResult.Success(author);
         }
     }
 }

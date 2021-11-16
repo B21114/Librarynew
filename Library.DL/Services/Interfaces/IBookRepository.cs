@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Library.DL.Services.Interfaces
 {
-    public interface IBookRepository
+    public interface IBookRepository : ITEntityRepository<Book>
     {
         Task<IEnumerable<Book>> Get();
         Task<IEnumerable<Book>> Get(int page, int pageSize, string filter, string sortPole);

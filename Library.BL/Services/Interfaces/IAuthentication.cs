@@ -15,6 +15,6 @@ namespace Library.BL.Services.Interfaces
         /// <param name="email">Email пользователя</param>
         /// <param name="password">Пароль пользователя</param>
         /// <returns></returns>
-        Task<UserAuth> Authenticate(string email, string password);
+        Task<User> Authenticate(string email, string password);
     }
 }

@@ -26,23 +26,27 @@ namespace Library.Models
         /// <summary>
         /// Email пользователя.
         /// </summary>
-        [Required(ErrorMessage = "Не указан Email")]
-        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
         /// <summary>
         /// Пароль пользователя.
         /// </summary>
-        [Required(ErrorMessage = "Не указан пароль")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public byte[] Password { get; set; }
 
         /// <summary>
-        /// Пароль пользователя повторно.
+        /// Пароль пользователя и соль.
         /// </summary>
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароль введен неверно")]
-        public string ConfirmPassword { get; set; }
+        public byte[] PasswordSalt { get; set; }
+
+        public string PasswordStr { get; set; }
+
+        public string ConfirmPasswordStr { get; set; }
+
+
+        /// <summary>
+        /// Токен для авторизации.
+        /// </summary>
+        public string Token { get; set; }
 
         /// <summary>
         /// Метод для сортировки по полям.

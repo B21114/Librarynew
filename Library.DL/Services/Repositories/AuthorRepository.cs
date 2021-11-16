@@ -9,35 +9,35 @@ using System.Threading.Tasks;
 
 namespace Library.DL.Services.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class AuthorRepository : TEntityRepository<Author>, IAuthorRepository
     {
         private readonly DataBaseContext _dataBaseContext;
 
-        public AuthorRepository(DataBaseContext dataBaseContext)
+        public AuthorRepository(DataBaseContext dataBaseContext) : base(dataBaseContext)
         {
             _dataBaseContext = dataBaseContext;
         }
 
-        public async Task<Author> Add(Author author)
-        {
-            await _dataBaseContext.Authors.AddAsync(author);
-            await _dataBaseContext.SaveChangesAsync();
-            return author;
-        }
+        //public async Task<Author> Add(Author author)
+        //{
+        //    await _dataBaseContext.Authors.AddAsync(author);
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return author;
+        //}
 
-        public async Task<bool> Delete(Author author)
-        {
-            _dataBaseContext.Entry(author).State = EntityState.Deleted;
-            await _dataBaseContext.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<bool> Delete(Author author)
+        //{
+        //    _dataBaseContext.Entry(author).State = EntityState.Deleted;
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return true;
+        //}
 
-        public async Task<IEnumerable<Author>> Get()
-        {
-            return await _dataBaseContext.Authors.ToListAsync();
-        }
+        //public async Task<IEnumerable<Author>> Get()
+        //{
+        //    return await _dataBaseContext.Authors.ToListAsync();
+        //}
 
-        public async Task<IEnumerable<Author>> Get(int page, int pageSize, string filter, string sortPole)
+        public override async Task<IEnumerable<Author>> Get(int page, int pageSize, string filter, string sortPole)
         {
             var sortmethod = Author.GetSortExpressions(sortPole);
             var query = _dataBaseContext.Authors.AsQueryable();
@@ -49,17 +49,17 @@ namespace Library.DL.Services.Repositories
             return query.OrderBy(sortmethod).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public async Task<Author> Get(Guid id)
-        {
-            return await _dataBaseContext.Authors.FindAsync(id);
-        }
+        //public async Task<Author> Get(Guid id)
+        //{
+        //    return await _dataBaseContext.Authors.FindAsync(id);
+        //}
 
-        public async Task<Author> Update(Guid id, Author author)
-        {
-            await _dataBaseContext.Authors.FindAsync(id);
-            _dataBaseContext.Entry(author).State = EntityState.Modified;
-            await _dataBaseContext.SaveChangesAsync();
-            return author;
-        }
+        //public async Task<Author> Update(Guid id, Author author)
+        //{
+        //    await _dataBaseContext.Authors.FindAsync(id);
+        //    _dataBaseContext.Entry(author).State = EntityState.Modified;
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return author;
+        //}
     }
 }
